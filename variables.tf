@@ -32,7 +32,7 @@ EOT
     frontdoor_name      = string
     name                = string
     resource_group_name = string
-    enabled             = optional(bool, true)
+    enabled             = optional(bool) # Default: true
     rule = optional(list(object({
       action = optional(object({
         request_header = optional(list(object({
@@ -47,7 +47,7 @@ EOT
         })))
       }))
       match_condition = optional(list(object({
-        negate_condition = optional(bool, false)
+        negate_condition = optional(bool) # Default: false
         operator         = string
         selector         = optional(string)
         transform        = optional(list(string))

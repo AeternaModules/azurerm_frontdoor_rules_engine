@@ -90,5 +90,59 @@ EOT
     ])
     error_message = "Each match_condition list must contain at most 100 items"
   }
+  # --- Unconfirmed validation candidates, derived from azurerm_frontdoor_rules_engine's provider source ---
+  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
+  # or a path that crosses a list-typed block (needs its own for_each wrapping).
+  # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: frontdoor_name
+  #   source:    azValidate.FrontDoorName: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
+  # path: resource_group_name
+  #   condition: length(value) <= 90
+  #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
+  #   source:    [from resourcegroups.ValidateName: invalid when len(value) > 90]
+  # path: resource_group_name
+  #   condition: !endswith(value, ".")
+  #   message:   [from resourcegroups.ValidateName: must not end with "."]
+  #   source:    [from resourcegroups.ValidateName: must not end with "."]
+  # path: resource_group_name
+  #   condition: length(value) != 0
+  #   message:   [from resourcegroups.ValidateName: invalid when len(value) == 0]
+  #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
+  # path: resource_group_name
+  #   source:    [from resourcegroups.ValidateName] !matched
+  # path: rule.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: rule.match_condition.variable
+  #   condition: contains(["IsMobile", "RemoteAddr", "RequestMethod", "QueryString", "PostArgs", "RequestUri", "RequestPath", "RequestFilename", "RequestFilenameExtension", "RequestHeader", "RequestBody", "RequestScheme"], value)
+  #   message:   must be one of: IsMobile, RemoteAddr, RequestMethod, QueryString, PostArgs, RequestUri, RequestPath, RequestFilename, RequestFilenameExtension, RequestHeader, RequestBody, RequestScheme
+  # path: rule.match_condition.selector
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: rule.match_condition.operator
+  #   condition: contains(["Any", "IPMatch", "GeoMatch", "Equal", "Contains", "LessThan", "GreaterThan", "LessThanOrEqual", "GreaterThanOrEqual", "BeginsWith", "EndsWith"], value)
+  #   message:   must be one of: Any, IPMatch, GeoMatch, Equal, Contains, LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual, BeginsWith, EndsWith
+  # path: rule.match_condition.transform[*]
+  #   condition: contains(["Lowercase", "RemoveNulls", "Trim", "Uppercase", "UrlDecode", "UrlEncode"], value)
+  #   message:   must be one of: Lowercase, RemoveNulls, Trim, Uppercase, UrlDecode, UrlEncode
+  # path: rule.match_condition.value[*]
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: rule.action.request_header.header_action_type
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: rule.action.request_header.header_name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: rule.action.request_header.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: rule.action.response_header.header_action_type
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: rule.action.response_header.header_name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: rule.action.response_header.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
 }
 

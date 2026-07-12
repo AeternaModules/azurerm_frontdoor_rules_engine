@@ -69,7 +69,7 @@ EOT
   validation {
     condition = alltrue([
       for k, v in var.frontdoor_rules_engines : (
-        v.rule == null || alltrue([for item in v.rule : (item.action.request_header == null || (length(item.action.request_header) <= 100))])
+        v.rule == null || alltrue([for item in v.rule : (item.action == null || (item.action.request_header == null || (length(item.action.request_header) <= 100)))])
       )
     ])
     error_message = "Each request_header list must contain at most 100 items"
@@ -77,7 +77,7 @@ EOT
   validation {
     condition = alltrue([
       for k, v in var.frontdoor_rules_engines : (
-        v.rule == null || alltrue([for item in v.rule : (item.action.response_header == null || (length(item.action.response_header) <= 100))])
+        v.rule == null || alltrue([for item in v.rule : (item.action == null || (item.action.response_header == null || (length(item.action.response_header) <= 100)))])
       )
     ])
     error_message = "Each response_header list must contain at most 100 items"

@@ -1,3 +1,7 @@
+output "frontdoor_rules_engines_id" {
+  description = "Map of id values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
+  value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.id }
+}
 output "frontdoor_rules_engines_enabled" {
   description = "Map of enabled values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
   value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.enabled }

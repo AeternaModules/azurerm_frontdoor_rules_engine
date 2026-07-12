@@ -1,29 +1,25 @@
-output "frontdoor_rules_engines" {
-  description = "All frontdoor_rules_engine resources"
-  value       = azurerm_frontdoor_rules_engine.frontdoor_rules_engines
-}
 output "frontdoor_rules_engines_enabled" {
-  description = "List of enabled values across all frontdoor_rules_engines"
-  value       = [for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : v.enabled]
+  description = "Map of enabled values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
+  value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.enabled }
 }
 output "frontdoor_rules_engines_frontdoor_name" {
-  description = "List of frontdoor_name values across all frontdoor_rules_engines"
-  value       = [for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : v.frontdoor_name]
+  description = "Map of frontdoor_name values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
+  value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.frontdoor_name }
 }
 output "frontdoor_rules_engines_location" {
-  description = "List of location values across all frontdoor_rules_engines"
-  value       = [for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : v.location]
+  description = "Map of location values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
+  value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.location }
 }
 output "frontdoor_rules_engines_name" {
-  description = "List of name values across all frontdoor_rules_engines"
-  value       = [for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : v.name]
+  description = "Map of name values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
+  value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.name }
 }
 output "frontdoor_rules_engines_resource_group_name" {
-  description = "List of resource_group_name values across all frontdoor_rules_engines"
-  value       = [for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : v.resource_group_name]
+  description = "Map of resource_group_name values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
+  value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.resource_group_name }
 }
 output "frontdoor_rules_engines_rule" {
-  description = "List of rule values across all frontdoor_rules_engines"
-  value       = [for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : v.rule]
+  description = "Map of rule values across all frontdoor_rules_engines, keyed the same as var.frontdoor_rules_engines"
+  value       = { for k, v in azurerm_frontdoor_rules_engine.frontdoor_rules_engines : k => v.rule }
 }
 

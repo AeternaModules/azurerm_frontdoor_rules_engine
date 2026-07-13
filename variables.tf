@@ -90,59 +90,110 @@ EOT
     ])
     error_message = "Each match_condition list must contain at most 100 items"
   }
-  # --- Unconfirmed validation candidates, derived from azurerm_frontdoor_rules_engine's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: frontdoor_name
-  #   source:    azValidate.FrontDoorName: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: resource_group_name
-  #   condition: length(value) <= 90
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  # path: resource_group_name
-  #   condition: !endswith(value, ".")
-  #   message:   [from resourcegroups.ValidateName: must not end with "."]
-  #   source:    [from resourcegroups.ValidateName: must not end with "."]
-  # path: resource_group_name
-  #   condition: length(value) != 0
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  # path: resource_group_name
-  #   source:    [from resourcegroups.ValidateName] !matched
-  # path: rule.name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: rule.match_condition.variable
-  #   condition: contains(["IsMobile", "RemoteAddr", "RequestMethod", "QueryString", "PostArgs", "RequestUri", "RequestPath", "RequestFilename", "RequestFilenameExtension", "RequestHeader", "RequestBody", "RequestScheme"], value)
-  #   message:   must be one of: IsMobile, RemoteAddr, RequestMethod, QueryString, PostArgs, RequestUri, RequestPath, RequestFilename, RequestFilenameExtension, RequestHeader, RequestBody, RequestScheme
-  # path: rule.match_condition.selector
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: rule.match_condition.operator
-  #   condition: contains(["Any", "IPMatch", "GeoMatch", "Equal", "Contains", "LessThan", "GreaterThan", "LessThanOrEqual", "GreaterThanOrEqual", "BeginsWith", "EndsWith"], value)
-  #   message:   must be one of: Any, IPMatch, GeoMatch, Equal, Contains, LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual, BeginsWith, EndsWith
-  # path: rule.match_condition.transform[*]
-  #   condition: contains(["Lowercase", "RemoveNulls", "Trim", "Uppercase", "UrlDecode", "UrlEncode"], value)
-  #   message:   must be one of: Lowercase, RemoveNulls, Trim, Uppercase, UrlDecode, UrlEncode
-  # path: rule.match_condition.value[*]
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: rule.action.request_header.header_action_type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: rule.action.request_header.header_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: rule.action.request_header.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: rule.action.response_header.header_action_type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: rule.action.response_header.header_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: rule.action.response_header.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        length(v.resource_group_name) <= 90
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) > 90]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        !endswith(v.resource_group_name, ".")
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: must not end with \".\"]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        length(v.resource_group_name) != 0
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) == 0]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (length(item.name) > 0)])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.match_condition == null || alltrue([for item in item.match_condition : (item.variable == null || (contains(["IsMobile", "RemoteAddr", "RequestMethod", "QueryString", "PostArgs", "RequestUri", "RequestPath", "RequestFilename", "RequestFilenameExtension", "RequestHeader", "RequestBody", "RequestScheme"], item.variable)))]))])
+      )
+    ])
+    error_message = "must be one of: IsMobile, RemoteAddr, RequestMethod, QueryString, PostArgs, RequestUri, RequestPath, RequestFilename, RequestFilenameExtension, RequestHeader, RequestBody, RequestScheme"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.match_condition == null || alltrue([for item in item.match_condition : (item.selector == null || (length(item.selector) > 0))]))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.match_condition == null || alltrue([for item in item.match_condition : (contains(["Any", "IPMatch", "GeoMatch", "Equal", "Contains", "LessThan", "GreaterThan", "LessThanOrEqual", "GreaterThanOrEqual", "BeginsWith", "EndsWith"], item.operator))]))])
+      )
+    ])
+    error_message = "must be one of: Any, IPMatch, GeoMatch, Equal, Contains, LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual, BeginsWith, EndsWith"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.match_condition == null || alltrue([for item in item.match_condition : (item.transform == null || (alltrue([for x in item.transform : contains(["Lowercase", "RemoveNulls", "Trim", "Uppercase", "UrlDecode", "UrlEncode"], x)])))]))])
+      )
+    ])
+    error_message = "must be one of: Lowercase, RemoveNulls, Trim, Uppercase, UrlDecode, UrlEncode"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.match_condition == null || alltrue([for item in item.match_condition : (item.value == null || (alltrue([for x in item.value : length(x) > 0])))]))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.action == null || (item.action.request_header == null || alltrue([for item in item.action.request_header : (item.header_name == null || (length(item.header_name) > 0))])))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.action == null || (item.action.request_header == null || alltrue([for item in item.action.request_header : (item.value == null || (length(item.value) > 0))])))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.action == null || (item.action.response_header == null || alltrue([for item in item.action.response_header : (item.header_name == null || (length(item.header_name) > 0))])))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.frontdoor_rules_engines : (
+        v.rule == null || alltrue([for item in v.rule : (item.action == null || (item.action.response_header == null || alltrue([for item in item.action.response_header : (item.value == null || (length(item.value) > 0))])))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # Note: 4 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 
